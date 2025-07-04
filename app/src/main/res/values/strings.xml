@@ -1,5 +1,30 @@
 <resources>
     <string name="app_name">GroceryListApp</string>
+
+    <string name="welcome_message">Welcome to Listify</string>
+    <string name="create_account">Create your account</string>
+    <string name="already_registered">Already registered?</string>
+    <string name="login_here">Log in here.</string>
+
+    <string name="bottom_nav_grocery">Grocery</string>
+    <string name="bottom_nav_search">Search</string>
+    <string name="bottom_nav_add">Add</string>
+    <string name="bottom_nav_profile">Profile</string>
+
+    <string name="action_notifications">Notifications</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_logout">Logout</string>
+
+    <string name="password_reset_headline">Enter your email address to reset your password</string>
+    <string name="email_hint">Email</string>
+    <string name="reset_password_hint">Reset Password</string>
+    <string name="cancel_button">Cancel</string>
+
+    <string name="registration_headline">Create your Account to start</string>
+    <string name="name_hint">Name</string>
+    <string name="password_hint">Password</string>
+    <string name="birthdate_hint">Date of Birth</string>
+    <string name="sign_up_button">Sign Up</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

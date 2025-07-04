@@ -25,9 +25,9 @@ class MainActivity : AppCompatActivity() {
         bottomNavigationView.setOnItemSelectedListener { item ->
            val selectedFragment = when(item.itemId) {
                R.id.nav_grocery -> Grocery_lists_Fragment()
-               R.id.nav_search -> SearchFragment() // Replace with your fragment class
-               R.id.nav_add -> Add_list_Fragment() // Replace with your fragment class
-               R.id.nav_profile -> ProfileFragment() // Replace with your fragment class
+               R.id.nav_search -> SearchFragment()
+               R.id.nav_add -> Add_list_Fragment()
+               R.id.nav_profile -> ProfileFragment()
                else -> null
             }
             selectedFragment?.let {

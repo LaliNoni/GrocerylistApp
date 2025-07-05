@@ -1,6 +1,8 @@
 package com.example.grocerylistapp
 
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -15,21 +17,28 @@ class MainActivity : AppCompatActivity() {
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
 
         bottomNavigationView = findViewById(R.id.bottom_navigation)
+
+        bottomNavigationView.menu.setGroupCheckable(0, false, true)
 
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, HomePageFragment())
             .commit()
 
         bottomNavigationView.setOnItemSelectedListener { item ->
-           val selectedFragment = when(item.itemId) {
-               R.id.nav_grocery -> Grocery_lists_Fragment()
-               R.id.nav_search -> SearchFragment()
-               R.id.nav_add -> Add_list_Fragment()
-               R.id.nav_profile -> ProfileFragment()
-               else -> null
+
+            bottomNavigationView.menu.setGroupCheckable(0, true, true)
+
+            val selectedFragment = when (item.itemId) {
+                R.id.nav_grocery -> Grocery_lists_Fragment()
+                R.id.nav_search -> SearchFragment()
+                R.id.nav_add -> Add_list_Fragment()
+                R.id.nav_profile -> ProfileFragment()
+                else -> null
             }
+
             selectedFragment?.let {
                 supportFragmentManager.beginTransaction()
                     .replace(R.id.fragment_container, it)
@@ -38,6 +47,7 @@ class MainActivity : AppCompatActivity() {
             } ?: false
         }
     }
+
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.top_app_bar_menu, menu)

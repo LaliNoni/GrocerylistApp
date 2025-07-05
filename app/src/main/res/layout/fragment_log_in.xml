@@ -25,6 +25,7 @@
         android:id="@+id/Email_log"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:minHeight="48dp"
         android:layout_marginHorizontal="32dp"
         android:layout_marginTop="76dp"
         android:hint="Email"
@@ -37,6 +38,7 @@
         android:id="@+id/Password_log"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:minHeight="48dp"
         android:layout_marginHorizontal="32dp"
         android:layout_marginTop="52dp"
         android:hint="Password"
@@ -57,5 +59,33 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="24dp" />
+
+    <TextView
+        android:id="@+id/text_forgot_password_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="@string/forgot_password_label"
+        android:textColor="#444444"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/LogIn_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/text_forgot_password"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:text="@string/forgot_password_click_here"
+        android:textColor="#50B3D1"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/text_forgot_password_label"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_bias="0.02" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

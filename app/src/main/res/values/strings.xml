@@ -19,12 +19,16 @@
     <string name="email_hint">Email</string>
     <string name="reset_password_hint">Reset Password</string>
     <string name="cancel_button">Cancel</string>
+    <string name="reset_button">Reset</string>
 
     <string name="registration_headline">Create your Account to start</string>
     <string name="name_hint">Name</string>
     <string name="password_hint">Password</string>
     <string name="birthdate_hint">Date of Birth</string>
     <string name="sign_up_button">Sign Up</string>
-    <!-- TODO: Remove or change this placeholder text -->
+
+    <string name="forgot_password_label">Forgot your password?</string>
+    <string name="forgot_password_click_here">Click here</string>
+
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

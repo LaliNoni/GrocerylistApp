@@ -5,6 +5,8 @@
     <string name="create_account">Create your account</string>
     <string name="already_registered">Already registered?</string>
     <string name="login_here">Log in here.</string>
+    <string name="grocery_lists_headline">My grocery lists</string>
+
 
     <string name="bottom_nav_grocery">Grocery</string>
     <string name="bottom_nav_search">Search</string>
@@ -15,20 +17,31 @@
     <string name="action_settings">Settings</string>
     <string name="action_logout">Logout</string>
 
-    <string name="password_reset_headline">Enter your email address to reset your password</string>
+    <string name="password_reset_headline">Enter your email address and birthdate to reset your password</string>
     <string name="email_hint">Email</string>
     <string name="reset_password_hint">Reset Password</string>
     <string name="cancel_button">Cancel</string>
-    <string name="reset_button">Reset</string>
+    <string name="verify_button">Verify</string>
 
     <string name="registration_headline">Create your Account to start</string>
+    <string name="profile_banner">Profile Banner</string>
     <string name="name_hint">Name</string>
+    <string name="last_name_hint">Last Name</string>
     <string name="password_hint">Password</string>
     <string name="birthdate_hint">Date of Birth</string>
     <string name="sign_up_button">Sign Up</string>
 
     <string name="forgot_password_label">Forgot your password?</string>
     <string name="forgot_password_click_here">Click here</string>
+
+    <string name="list_name_hint">List name</string>
+    <string name="date_hint">Date</string>
+    <string name="add_list_button">Add</string>
+
+    <string name="password_verification_headline">Reset Your Password</string>
+    <string name="new_password_hint">New Password</string>
+    <string name="confirm_password_hint">Confirm Password</string>
+    <string name="save_password_button">Save</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

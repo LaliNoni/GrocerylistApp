@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 class RegisterFragment : Fragment() {
 
     private lateinit var nameEditText: EditText
+    private lateinit var lastNameEditText: EditText
     private lateinit var emailEditText: EditText
     private lateinit var passwordEditText: EditText
     private lateinit var birthDateEditText: EditText
@@ -27,7 +28,8 @@ class RegisterFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        nameEditText = view.findViewById(R.id.Name_Regist)
+        nameEditText = view.findViewById(R.id.regist_name)
+        nameEditText = view.findViewById(R.id.regist_last_name)
         emailEditText = view.findViewById(R.id.Email_regist)
         passwordEditText = view.findViewById(R.id.Password_regist)
         birthDateEditText = view.findViewById(R.id.BirthDate_regist)
@@ -35,6 +37,7 @@ class RegisterFragment : Fragment() {
 
         signUpButton.setOnClickListener {
             val name = nameEditText.text.toString().trim()
+            val lastName = lastNameEditText.text.toString().trim()
             val email = emailEditText.text.toString().trim()
             val password = passwordEditText.text.toString().trim()
             val birthDate = birthDateEditText.text.toString().trim()

@@ -1,0 +1,43 @@
+package com.example.grocerylistapp
+
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.CheckBox
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
+
+class GroceryListAdapter(
+    private val lists: List<GroceryListModel>,
+    private val onCheckedChange: (position: Int, isChecked: Boolean) -> Unit
+) : RecyclerView.Adapter<GroceryListAdapter.ViewHolder>() {
+
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val listName: TextView = itemView.findViewById(R.id.list_name)
+        val listDate: TextView = itemView.findViewById(R.id.list_date)
+        val listImage: ImageView = itemView.findViewById(R.id.list_image)
+        val listChecked: CheckBox = itemView.findViewById(R.id.list_checked)
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.lists_item_layout, parent, false)
+        return ViewHolder(view)
+    }
+
+    override fun getItemCount(): Int = lists.size
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val listItem = lists[position]
+
+        holder.listName.text = listItem.name
+        holder.listDate.text = listItem.date
+        holder.listImage.setImageResource(listItem.imageResId)
+        holder.listChecked.isChecked = listItem.isDone
+
+        holder.listChecked.setOnCheckedChangeListener { _, isChecked ->
+            onCheckedChange(position, isChecked)
+        }
+    }
+}

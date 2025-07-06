@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
             bottomNavigationView.menu.setGroupCheckable(0, true, true)
 
             val selectedFragment = when (item.itemId) {
-                R.id.nav_grocery -> Grocery_lists_Fragment()
+                R.id.nav_grocery -> GroceryListsFragment()
                 R.id.nav_search -> SearchFragment()
                 R.id.nav_add -> Add_list_Fragment()
                 R.id.nav_profile -> ProfileFragment()

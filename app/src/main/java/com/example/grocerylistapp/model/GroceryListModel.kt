@@ -1,4 +1,6 @@
-package com.example.grocerylistapp
+package com.example.grocerylistapp.model
+
+import com.example.grocerylistapp.R
 
 data class GroceryListModel(
     val name: String,

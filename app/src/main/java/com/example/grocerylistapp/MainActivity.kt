@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity() {
             val selectedFragment = when (item.itemId) {
                 R.id.nav_grocery -> GroceryListsFragment()
                 R.id.nav_search -> SearchFragment()
-                R.id.nav_add -> Add_list_Fragment()
+                R.id.nav_add -> AddListFragment()
                 R.id.nav_profile -> ProfileFragment()
                 else -> null
             }

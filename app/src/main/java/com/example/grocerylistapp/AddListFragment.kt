@@ -129,13 +129,13 @@ class AddListFragment : Fragment() {
 
             //Beverages
             GroceryItem("Water Bottle", "?", R.drawable.water_bottle),
+            GroceryItem("Tea", "?", R.drawable.tea),
+            GroceryItem("Coffee Beans", "?", R.drawable.coffee_beans),
             GroceryItem("Apple Juice", "?", R.drawable.apple_juice),
             GroceryItem("Cider", "?", R.drawable.cider),
             GroceryItem("Juice", "?", R.drawable.juice),
             GroceryItem("Red Wine", "?", R.drawable.red_wine),
-            GroceryItem("Coffee Beans", "?", R.drawable.coffee_beans),
             GroceryItem("Gallon", "?", R.drawable.gallon)
-
         )
 
         val adapter = ImagePickerAdapter(availableItems) { selectedItem, isSelected ->

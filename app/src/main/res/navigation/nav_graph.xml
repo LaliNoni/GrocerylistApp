@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homePageFragment">
+
+    <fragment
+        android:id="@+id/homePageFragment"
+        android:name="com.example.grocerylistapp.HomePageFragment"
+        android:label="fragment_home_page"
+        tools:layout="@layout/fragment_home_page" >
+        <action
+            android:id="@+id/action_homePageFragment_to_registerFragment"
+            app:destination="@id/registerFragment" />
+        <action
+            android:id="@+id/action_homePageFragment_to_logInFragment"
+            app:destination="@id/logInFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.example.grocerylistapp.RegisterFragment"
+        android:label="fragment_register"
+        tools:layout="@layout/fragment_register" >
+        <action
+            android:id="@+id/action_registerFragment_to_groceryListsFragment"
+            app:destination="@id/groceryListsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/logInFragment"
+        android:name="com.example.grocerylistapp.LogInFragment"
+        android:label="fragment_log_in"
+        tools:layout="@layout/fragment_log_in" >
+        <action
+            android:id="@+id/action_logInFragment_to_passwordResetFragment"
+            app:destination="@id/passwordResetFragment" />
+        <action
+            android:id="@+id/action_logInFragment_to_groceryListsFragment"
+            app:destination="@id/groceryListsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/passwordResetFragment"
+        android:name="com.example.grocerylistapp.PasswordResetFragment"
+        android:label="fragment_password_reset"
+        tools:layout="@layout/fragment_password_reset" >
+        <action
+            android:id="@+id/action_passwordResetFragment_to_passwordVerificationFragment"
+            app:destination="@id/passwordVerificationFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/passwordVerificationFragment"
+        android:name="com.example.grocerylistapp.PasswordVerificationFragment"
+        android:label="fragment_password_verification"
+        tools:layout="@layout/fragment_password_verification" />
+    <fragment
+        android:id="@+id/groceryListsFragment"
+        android:name="com.example.grocerylistapp.GroceryListsFragment"
+        android:label="fragment_grocery_lists"
+        tools:layout="@layout/fragment_grocery_lists" />
+</navigation>

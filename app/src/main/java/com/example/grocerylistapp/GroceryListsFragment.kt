@@ -34,7 +34,6 @@ class GroceryListsFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = adapter
 
-        // Example data
         groceryLists.add(GroceryListModel("Weekly Groceries", "10 May 2025"))
         groceryLists.add(GroceryListModel("Party Prep", "12 APR 2025", isDone = true))
 

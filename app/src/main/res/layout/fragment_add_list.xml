@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -40,7 +41,7 @@
         android:id="@+id/add_list_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="572dp"
+        android:layout_marginTop="480dp"
         android:backgroundTint="#50B3D1"
         android:text="@string/add_list_button"
         android:textStyle="bold"
@@ -48,5 +49,17 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/list_name_input" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/itemRecyclerView"
+        android:layout_width="387dp"
+        android:layout_height="95dp"
+        android:layout_marginTop="24dp"
+        android:contentDescription="@string/recycler_view_description"
+        android:overScrollMode="never"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/add_list_button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

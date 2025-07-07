@@ -44,6 +44,7 @@
     <string name="save_password_button">Save</string>
 
     <string name="recycler_view_description">List of grocery lists</string>
+    <string name="item_image_description">Grocery item image</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

@@ -4,11 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
+import android.widget.*
 import androidx.fragment.app.Fragment
-import android.widget.TextView
+import androidx.navigation.fragment.findNavController
 
 class LogInFragment : Fragment() {
 
@@ -17,11 +15,10 @@ class LogInFragment : Fragment() {
     private lateinit var loginButton: Button
     private lateinit var forgotPasswordTextView: TextView
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         return inflater.inflate(R.layout.fragment_log_in, container, false)
     }
 
@@ -41,14 +38,13 @@ class LogInFragment : Fragment() {
                 Toast.makeText(requireContext(), "Please enter email and password", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(requireContext(), "Login successful!", Toast.LENGTH_SHORT).show()
+                // Navigate to grocery list after login
+                findNavController().navigate(R.id.action_logInFragment_to_groceryListsFragment)
             }
         }
 
         forgotPasswordTextView.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, PasswordResetFragment())
-                .addToBackStack(null)
-                .commit()
+            findNavController().navigate(R.id.action_logInFragment_to_passwordResetFragment)
         }
     }
 }

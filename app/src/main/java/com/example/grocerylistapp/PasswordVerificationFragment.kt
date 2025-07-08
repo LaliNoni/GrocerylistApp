@@ -8,13 +8,14 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 
 class PasswordVerificationFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         return inflater.inflate(R.layout.fragment_password_verification, container, false)
     }
 
@@ -36,9 +37,7 @@ class PasswordVerificationFragment : Fragment() {
             } else {
                 Toast.makeText(requireContext(), "Password updated successfully!", Toast.LENGTH_SHORT).show()
 
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, LogInFragment())
-                    .commit()
+                findNavController().navigate(R.id.action_passwordVerificationFragment_to_logInFragment)
             }
         }
     }

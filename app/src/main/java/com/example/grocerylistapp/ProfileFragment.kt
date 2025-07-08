@@ -1,59 +1,94 @@
 package com.example.grocerylistapp
 
+import android.app.AlertDialog
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import com.example.grocerylistapp.ProfileFragment
+import com.example.grocerylistapp.R
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [ProfileFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class ProfileFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var profileBanner: ImageView
+    private lateinit var editProfileButton: ImageButton
+    private lateinit var saveButton: View
+
+    private lateinit var profileName: EditText
+    private lateinit var profileLastName: EditText
+    private lateinit var profileEmail: EditText
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_profile, container, false)
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ProfileFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            ProfileFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        profileBanner = view.findViewById(R.id.profile_banner)
+        editProfileButton = view.findViewById(R.id.edit_profile_button)
+        saveButton = view.findViewById(R.id.save_profile_button)
+
+        profileName = view.findViewById(R.id.profile_name)
+        profileLastName = view.findViewById(R.id.profile_last_name)
+        profileEmail = view.findViewById(R.id.profile_email)
+
+        profileEmail.isEnabled = false
+
+        val openImagePicker = View.OnClickListener { showImagePickerDialog() }
+        profileBanner.setOnClickListener(openImagePicker)
+        editProfileButton.setOnClickListener(openImagePicker)
+
+        saveButton.setOnClickListener {
+            val name = profileName.text.toString().trim()
+            val lastName = profileLastName.text.toString().trim()
+
+            if (name.isEmpty() || lastName.isEmpty()) {
+                Toast.makeText(requireContext(), "Name and Last Name cannot be empty", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
+
+            // TODO: Save the profile data (e.g. to database or shared prefs)
+
+            Toast.makeText(requireContext(), "Profile saved successfully!", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun showImagePickerDialog() {
+        val dialogView = LayoutInflater.from(requireContext())
+            .inflate(R.layout.dialog_image_picker, null)
+
+        val dialog = AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.select_profile_image))
+            .setView(dialogView)
+            .create()
+
+        dialogView.findViewById<ImageView>(R.id.image_female_one).setOnClickListener {
+            profileBanner.setImageResource(R.drawable.female_profile_one)
+            dialog.dismiss()
+        }
+
+        dialogView.findViewById<ImageView>(R.id.image_female_two).setOnClickListener {
+            profileBanner.setImageResource(R.drawable.female_profile_two)
+            dialog.dismiss()
+        }
+
+        dialogView.findViewById<ImageView>(R.id.image_male_one).setOnClickListener {
+            profileBanner.setImageResource(R.drawable.male_profile_one)
+            dialog.dismiss()
+        }
+
+        dialogView.findViewById<ImageView>(R.id.image_male_two).setOnClickListener {
+            profileBanner.setImageResource(R.drawable.male_profile_two)
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 }

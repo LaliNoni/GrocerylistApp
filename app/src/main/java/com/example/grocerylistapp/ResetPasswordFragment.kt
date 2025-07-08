@@ -4,10 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
+import android.widget.*
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 
 class PasswordResetFragment : Fragment() {
 
@@ -19,7 +18,7 @@ class PasswordResetFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         return inflater.inflate(R.layout.fragment_password_reset, container, false)
     }
 
@@ -32,10 +31,7 @@ class PasswordResetFragment : Fragment() {
         verifyButton = view.findViewById(R.id.verify_button)
 
         cancelButton.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, LogInFragment())
-                .addToBackStack(null)
-                .commit()
+            findNavController().navigate(R.id.action_passwordResetFragment_to_logInFragment)
         }
 
         verifyButton.setOnClickListener {
@@ -45,12 +41,8 @@ class PasswordResetFragment : Fragment() {
             if (email.isEmpty() || birthdate.isEmpty()) {
                 Toast.makeText(requireContext(), "Please enter both email and birthdate", Toast.LENGTH_SHORT).show()
             } else {
-                // Optionally add email and birthdate verification logic here
-
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, PasswordVerificationFragment())
-                    .addToBackStack(null)
-                    .commit()
+                // Optional: You can add validation logic here
+                findNavController().navigate(R.id.action_passwordResetFragment_to_passwordVerificationFragment)
             }
         }
     }

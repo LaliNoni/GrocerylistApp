@@ -14,7 +14,6 @@
     <string name="bottom_nav_profile">Profile</string>
 
     <string name="action_notifications">Notifications</string>
-    <string name="action_settings">Settings</string>
     <string name="action_logout">Logout</string>
 
     <string name="password_reset_headline">Enter your email address and birthdate to reset your password</string>
@@ -46,12 +45,20 @@
     <string name="password_verification_headline">Reset Your Password</string>
     <string name="new_password_hint">New Password</string>
     <string name="confirm_password_hint">Confirm Password</string>
-    <string name="save_password_button">Save</string>
+    <string name="save_button">Save</string>
 
     <string name="recycler_view_description">List of grocery lists</string>
     <string name="item_image_description">Grocery item image</string>
 
+    <string name="delete_list">Delete list</string>
 
+    <string name="edit_profile">Edit Profile</string>
+    <string name="profile_image">Profile Image</string>">
+    <string name="select_profile_image">Select Profile Image</string>
+    <string name="female_profile_one">Female Profile One</string>
+    <string name="female_profile_two">Female Profile Two</string>
+    <string name="male_profile_one">Male Profile One</string>
+    <string name="male_profile_two">Male Profile Two</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

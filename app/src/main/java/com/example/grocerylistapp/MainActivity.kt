@@ -5,11 +5,11 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
-
-    private lateinit var bottomNavigationView: BottomNavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,35 +19,13 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        bottomNavigationView = findViewById(R.id.bottom_navigation)
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
 
-        bottomNavigationView.menu.setGroupCheckable(0, false, true)
-
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, HomePageFragment())
-            .commit()
-
-        bottomNavigationView.setOnItemSelectedListener { item ->
-
-            bottomNavigationView.menu.setGroupCheckable(0, true, true)
-
-            val selectedFragment = when (item.itemId) {
-                R.id.nav_grocery -> GroceryListsFragment()
-                R.id.nav_search -> SearchFragment()
-                R.id.nav_add -> AddListFragment()
-                R.id.nav_profile -> ProfileFragment()
-                else -> null
-            }
-
-            selectedFragment?.let {
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, it)
-                    .commit()
-                true
-            } ?: false
-        }
+        val navController = navHostFragment.navController
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
+        bottomNavigationView.setupWithNavController(navController)
     }
-
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.top_app_bar_menu, menu)
@@ -57,15 +35,11 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_notifications -> {
-                // TODO: Handle notifications click
-                true
-            }
-            R.id.action_settings -> {
-                // TODO: Handle settings click
+                // TODO: Handle notifications
                 true
             }
             R.id.action_logout -> {
-                // TODO: Handle logout click
+                // TODO: Handle logout
                 true
             }
             else -> super.onOptionsItemSelected(item)

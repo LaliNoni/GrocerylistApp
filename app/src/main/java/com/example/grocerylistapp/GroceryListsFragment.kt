@@ -26,10 +26,16 @@ class GroceryListsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         recyclerView = view.findViewById(R.id.groceryRecyclerView)
 
-        adapter = GroceryListAdapter(groceryLists) { position, isChecked ->
-            groceryLists[position].isDone = isChecked
-            // Save change to DB here later
-        }
+        adapter = GroceryListAdapter(groceryLists,
+            onCheckedChange = { position, isChecked ->
+                groceryLists[position].isDone = isChecked
+                // Save change to DB here later
+            },
+            onDeleteClick = { position ->
+                groceryLists.removeAt(position)
+                adapter.notifyItemRemoved(position)
+            }
+        )
 
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = adapter

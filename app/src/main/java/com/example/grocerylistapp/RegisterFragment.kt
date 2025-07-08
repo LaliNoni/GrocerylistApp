@@ -4,10 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
+import android.widget.*
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 
 class RegisterFragment : Fragment() {
 
@@ -21,7 +20,7 @@ class RegisterFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         return inflater.inflate(R.layout.fragment_register, container, false)
     }
 
@@ -29,7 +28,7 @@ class RegisterFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         nameEditText = view.findViewById(R.id.regist_name)
-        nameEditText = view.findViewById(R.id.regist_last_name)
+        lastNameEditText = view.findViewById(R.id.regist_last_name)
         emailEditText = view.findViewById(R.id.Email_regist)
         passwordEditText = view.findViewById(R.id.Password_regist)
         birthDateEditText = view.findViewById(R.id.BirthDate_regist)
@@ -42,11 +41,11 @@ class RegisterFragment : Fragment() {
             val password = passwordEditText.text.toString().trim()
             val birthDate = birthDateEditText.text.toString().trim()
 
-            if (name.isEmpty() || email.isEmpty() || password.isEmpty() || birthDate.isEmpty()) {
+            if (name.isEmpty() || lastName.isEmpty() || email.isEmpty() || password.isEmpty() || birthDate.isEmpty()) {
                 Toast.makeText(requireContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show()
             } else {
-                // TODO: Save user or navigate
                 Toast.makeText(requireContext(), "Registered successfully!", Toast.LENGTH_SHORT).show()
+                findNavController().navigate(R.id.action_registerFragment_to_groceryListsFragment)
             }
         }
     }

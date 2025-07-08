@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 
 class HomePageFragment : Fragment() {
 
@@ -24,18 +25,11 @@ class HomePageFragment : Fragment() {
         val loginTextView = view.findViewById<TextView>(R.id.text_login)
 
         createAccountButton.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, RegisterFragment())
-                .addToBackStack(null)
-                .commit()
+            findNavController().navigate(R.id.action_homePageFragment_to_registerFragment)
         }
 
         loginTextView.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, LogInFragment())
-                .addToBackStack(null)
-                .commit()
+            findNavController().navigate(R.id.action_homePageFragment_to_logInFragment)
         }
-
     }
 }

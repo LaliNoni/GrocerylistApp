@@ -51,10 +51,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.action_notifications -> {
-                // TODO: Handle notifications
-                true
-            }
             R.id.action_logout -> {
                 // TODO: Handle logout
                 true

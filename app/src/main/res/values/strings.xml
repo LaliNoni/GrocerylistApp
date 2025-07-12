@@ -47,7 +47,9 @@
     <string name="confirm_password_hint">Confirm Password</string>
     <string name="save_button">Save</string>
 
-    <string name="recycler_view_description">List of grocery lists</string>
+    <string name="recycler_view_item_image">List of grocery images</string>
+    <string name="recycler_view_user_input">List of grocery items</string>
+    <string name="recycler_view_lists">List of grocery lists</string>
     <string name="item_image_description">Grocery item image</string>
 
     <string name="delete">Delete </string>

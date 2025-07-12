@@ -10,8 +10,6 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.example.grocerylistapp.ProfileFragment
-import com.example.grocerylistapp.R
 
 class ProfileFragment : Fragment() {
 
@@ -62,7 +60,7 @@ class ProfileFragment : Fragment() {
 
     private fun showImagePickerDialog() {
         val dialogView = LayoutInflater.from(requireContext())
-            .inflate(R.layout.dialog_image_picker, null)
+            .inflate(R.layout.profile_image_picker, null)
 
         val dialog = AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.select_profile_image))

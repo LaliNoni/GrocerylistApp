@@ -10,7 +10,8 @@ import com.example.grocerylistapp.model.UserItem
 
 class UserItemAdapter(
     private val items: MutableList<UserItem>,
-    private val onAddItemBelow: (position: Int) -> Unit
+    private val onAddItemBelow: (position: Int) -> Unit,
+    private val onImageClick: (position: Int) -> Unit
 ) : RecyclerView.Adapter<UserItemAdapter.ViewHolder>() {
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -19,9 +20,10 @@ class UserItemAdapter(
         private val quantity: EditText = view.findViewById(R.id.item_quantity)
         private val checkBox: CheckBox = view.findViewById(R.id.item_checkbox)
         private val addButton: Button = view.findViewById(R.id.add_item_button)
+        private val deleteButton: ImageButton = view.findViewById(R.id.delete_button)
 
         fun bind(item: UserItem, position: Int) {
-            image.setImageResource(item.imageResId)
+            image.setImageResource(item.imageRes)
             name.setText(item.name)
             quantity.setText(item.quantity.toString())
             checkBox.isChecked = item.isChecked
@@ -41,9 +43,24 @@ class UserItemAdapter(
             addButton.setOnClickListener {
                 onAddItemBelow(position)
             }
+
+            image.setOnClickListener {
+                if (item.imageRes != R.drawable.bake) {
+                    item.imageRes = R.drawable.bake
+                    notifyItemChanged(position)
+                } else {
+                    onImageClick(position)
+                }
+            }
+
+            deleteButton.setOnClickListener {
+                items.removeAt(position)
+                notifyItemRemoved(position)
+                notifyItemRangeChanged(position, items.size)
+            }
+
         }
     }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.fragment_item_user_input, parent, false)

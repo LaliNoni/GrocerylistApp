@@ -14,7 +14,7 @@ class ImagePickerAdapter(
     private val onItemClick: (GroceryItem, isSelected: Boolean) -> Unit
 ) : RecyclerView.Adapter<ImagePickerAdapter.ViewHolder>() {
 
-    private val selectedPositions = mutableSetOf<Int>()
+    private var selectedPosition: Int? = null
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val image: ImageView = view.findViewById(R.id.item_image_view)
@@ -23,18 +23,21 @@ class ImagePickerAdapter(
             image.setImageResource(item.imageResId ?: R.drawable.chef)
             image.contentDescription = item.name
 
-            // Show selection state (e.g., change alpha or border)
-            image.alpha = if (selectedPositions.contains(position)) 0.5f else 1.0f
+            image.alpha = if (selectedPosition == position) 0.5f else 1.0f
 
             image.setOnClickListener {
-                if (selectedPositions.contains(position)) {
-                    selectedPositions.remove(position)
-                    image.alpha = 1.0f
-                    onItemClick(item, false) // deselected
+                val previouslySelected = selectedPosition
+
+                if (position == selectedPosition) {
+                    selectedPosition = null
+                    notifyItemChanged(position)
+                    onItemClick(item, false)
                 } else {
-                    selectedPositions.add(position)
-                    image.alpha = 0.5f
-                    onItemClick(item, true) // selected
+
+                    selectedPosition = position
+                    notifyItemChanged(previouslySelected ?: -1)
+                    notifyItemChanged(position)
+                    onItemClick(item, true)
                 }
             }
         }

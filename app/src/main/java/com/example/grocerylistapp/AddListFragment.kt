@@ -7,19 +7,29 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
-import com.example.grocerylistapp.adapter.ImagePickerAdapter
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.grocerylistapp.adapter.ImagePickerAdapter
+import com.example.grocerylistapp.adapter.UserItemAdapter
 import com.example.grocerylistapp.model.GroceryItem
 import com.example.grocerylistapp.model.GroceryListModel
+import com.example.grocerylistapp.model.UserItem
 
 class AddListFragment : Fragment() {
 
     private lateinit var nameInput: EditText
     private lateinit var dateInput: EditText
     private lateinit var addButton: Button
-    private lateinit var itemRecyclerView: RecyclerView
 
+
+    private lateinit var itemRecyclerView: RecyclerView
+    private lateinit var userItemRecyclerView: RecyclerView
+
+    private lateinit var userItemAdapter: UserItemAdapter
+    private val userItem = mutableListOf<UserItem>()
     private val selectedItems = mutableListOf<GroceryItem>()
+
+    private var selectedUserItemPosition: Int = -1
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,6 +45,36 @@ class AddListFragment : Fragment() {
         dateInput = view.findViewById(R.id.list_date_input)
         addButton = view.findViewById(R.id.add_list_button)
         itemRecyclerView = view.findViewById(R.id.itemRecyclerView)
+        userItemRecyclerView = view.findViewById(R.id.userItemRecyclerView)
+
+        userItem.add(UserItem())
+
+        userItemAdapter = UserItemAdapter(
+            userItem,
+            onAddItemBelow = { position ->
+                val currentItem = userItem[position]
+                val isNameValid = currentItem.name.isNotBlank()
+                val isQuantityValid = currentItem.quantity > 0
+
+                if (isNameValid && isQuantityValid) {
+                    userItem.add(position + 1, UserItem())
+                    userItemAdapter.notifyItemInserted(position + 1)
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        "Please enter item name and quantity before adding a new item",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            },
+            onImageClick = { position ->
+                selectedUserItemPosition = position
+                Toast.makeText(requireContext(), "Select an image below to replace item #${position + 1} image", Toast.LENGTH_SHORT).show()
+            }
+        )
+
+        userItemRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        userItemRecyclerView.adapter = userItemAdapter
 
         setupItemRecyclerView()
 
@@ -48,17 +88,19 @@ class AddListFragment : Fragment() {
             }
 
             val newList = GroceryListModel(name, date)
-
-            // You could also associate selectedItems here later
-            // e.g., newList.items = selectedItems
+            // TODO: Attach userItem and selectedItems to the model or save it
 
             Toast.makeText(requireContext(), "List \"$name\" added!", Toast.LENGTH_SHORT).show()
 
             nameInput.text.clear()
             dateInput.text.clear()
             selectedItems.clear()
+            userItem.clear()
+            userItem.add(UserItem())
+            userItemAdapter.notifyDataSetChanged()
         }
     }
+
 
     private fun setupItemRecyclerView() {
         val availableItems = listOf(
@@ -142,6 +184,12 @@ class AddListFragment : Fragment() {
             if (isSelected) {
                 selectedItems.add(selectedItem)
                 Toast.makeText(requireContext(), "${selectedItem.name} added", Toast.LENGTH_SHORT).show()
+
+                if (selectedUserItemPosition in userItem.indices) {
+                    userItem[selectedUserItemPosition].imageRes = selectedItem.imageResId ?: R.drawable.bake
+                    userItemAdapter.notifyItemChanged(selectedUserItemPosition)
+                    selectedUserItemPosition = -1
+                }
             } else {
                 selectedItems.remove(selectedItem)
                 Toast.makeText(requireContext(), "${selectedItem.name} removed", Toast.LENGTH_SHORT).show()

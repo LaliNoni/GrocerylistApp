@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -34,10 +35,17 @@ class ItemUserInputFragment : Fragment() {
         userItems.add(UserItem())
         userItems.add(UserItem())
 
-        adapter = UserItemAdapter(userItems) { position ->
-            userItems.add(position + 1, UserItem())
-            adapter.notifyItemInserted(position + 1)
-        }
+        adapter = UserItemAdapter(
+            userItems,
+            onAddItemBelow = { position ->
+                userItems.add(position + 1, UserItem())
+                adapter.notifyItemInserted(position + 1)
+            },
+            onImageClick = { position ->
+                // Handle image click here, e.g., open image picker dialog
+                Toast.makeText(requireContext(), "Image clicked at position $position", Toast.LENGTH_SHORT).show()
+            }
+        )
 
         userItemRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         userItemRecyclerView.adapter = adapter

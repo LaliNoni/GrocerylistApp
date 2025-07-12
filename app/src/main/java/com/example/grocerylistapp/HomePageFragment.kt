@@ -31,5 +31,6 @@ class HomePageFragment : Fragment() {
         loginTextView.setOnClickListener {
             findNavController().navigate(R.id.action_homePageFragment_to_logInFragment)
         }
+
     }
 }

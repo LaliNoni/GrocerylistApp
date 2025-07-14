@@ -7,13 +7,15 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.google.firebase.auth.FirebaseAuth
 
 class LogInFragment : Fragment() {
+
+    private lateinit var auth: FirebaseAuth
 
     private lateinit var emailEditText: EditText
     private lateinit var passwordEditText: EditText
     private lateinit var loginButton: Button
-    private lateinit var forgotPasswordTextView: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -25,10 +27,11 @@ class LogInFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        auth = FirebaseAuth.getInstance()
+
         emailEditText = view.findViewById(R.id.Email_log)
         passwordEditText = view.findViewById(R.id.Password_log)
         loginButton = view.findViewById(R.id.LogIn_button)
-        forgotPasswordTextView = view.findViewById(R.id.text_forgot_password)
 
         loginButton.setOnClickListener {
             val email = emailEditText.text.toString().trim()
@@ -36,15 +39,21 @@ class LogInFragment : Fragment() {
 
             if (email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(requireContext(), "Please enter email and password", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(requireContext(), "Login successful!", Toast.LENGTH_SHORT).show()
-                // Navigate to grocery list after login
-                findNavController().navigate(R.id.action_logInFragment_to_groceryListsFragment)
+                return@setOnClickListener
             }
+
+            auth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(requireActivity()) { task ->
+                    if (task.isSuccessful) {
+                        Toast.makeText(requireContext(), "Login successful!", Toast.LENGTH_SHORT).show()
+                        findNavController().navigate(R.id.action_logInFragment_to_groceryListsFragment)
+                    } else {
+                        val errorMessage = task.exception?.message ?: "Login failed."
+                        Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_LONG).show()
+                    }
+                }
         }
 
-        forgotPasswordTextView.setOnClickListener {
-            findNavController().navigate(R.id.action_logInFragment_to_passwordResetFragment)
-        }
+
     }
 }

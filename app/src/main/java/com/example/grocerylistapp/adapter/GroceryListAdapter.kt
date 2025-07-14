@@ -14,7 +14,8 @@ import com.example.grocerylistapp.model.GroceryListModel
 class GroceryListAdapter(
     private val lists: List<GroceryListModel>,
     private val onCheckedChange: (position: Int, isChecked: Boolean) -> Unit,
-    private val onDeleteClick: (position: Int) -> Unit
+    private val onDeleteClick: (position: Int) -> Unit,
+    private val onListClick: (GroceryListModel) -> Unit
 ) : RecyclerView.Adapter<GroceryListAdapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -38,15 +39,20 @@ class GroceryListAdapter(
 
         holder.listName.text = listItem.name
         holder.listDate.text = listItem.date
-        holder.listImage.setImageResource(listItem.imageResId)
-        holder.listChecked.isChecked = listItem.isDone
 
+        holder.listImage.setImageResource(R.drawable.list_placeholder)
+        holder.listChecked.setOnCheckedChangeListener(null)
+        holder.listChecked.isChecked = listItem.isDone
         holder.listChecked.setOnCheckedChangeListener { _, isChecked ->
             onCheckedChange(position, isChecked)
         }
 
         holder.deleteButton.setOnClickListener {
             onDeleteClick(position)
+        }
+
+        holder.itemView.setOnClickListener {
+            onListClick(listItem)
         }
     }
 }

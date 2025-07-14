@@ -20,7 +20,7 @@ class ImagePickerAdapter(
         private val image: ImageView = view.findViewById(R.id.item_image_view)
 
         fun bind(item: GroceryItem, position: Int) {
-            image.setImageResource(item.imageResId ?: R.drawable.chef)
+            image.setImageResource(item.imageRes ?: R.drawable.bake)
             image.contentDescription = item.name
 
             image.alpha = if (selectedPosition == position) 0.5f else 1.0f

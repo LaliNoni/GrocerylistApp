@@ -9,12 +9,17 @@ import androidx.appcompat.widget.Toolbar
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        auth = FirebaseAuth.getInstance()
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -22,24 +27,25 @@ class MainActivity : AppCompatActivity() {
 
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-
         val navController = navHostFragment.navController
+
+        val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
+
+        navGraph.setStartDestination(
+            if (auth.currentUser != null) R.id.groceryListsFragment
+            else R.id.homePageFragment
+        )
+        navController.graph = navGraph
+
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         bottomNavigationView.setupWithNavController(navController)
 
-
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            when (destination.id) {
-                //R.id.homePageFragment,
+            bottomNavigationView.visibility = when (destination.id) {
+                R.id.homePageFragment,
                 R.id.logInFragment,
-                R.id.registerFragment,
-                R.id.passwordResetFragment,
-                R.id.passwordVerificationFragment, -> {
-                    bottomNavigationView.visibility = View.GONE
-                }
-                else -> {
-                    bottomNavigationView.visibility = View.VISIBLE
-                }
+                R.id.registerFragment -> View.GONE
+                else -> View.VISIBLE
             }
         }
     }
@@ -52,7 +58,13 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_logout -> {
-                // TODO: Handle logout
+                auth.signOut()
+
+                val navHostFragment = supportFragmentManager
+                    .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+                val navController = navHostFragment.navController
+                navController.navigate(R.id.homePageFragment)
+
                 true
             }
             else -> super.onOptionsItemSelected(item)

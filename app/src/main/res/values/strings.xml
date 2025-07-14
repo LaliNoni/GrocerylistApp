@@ -51,6 +51,10 @@
     <string name="recycler_view_user_input">List of grocery items</string>
     <string name="recycler_view_lists">List of grocery lists</string>
     <string name="item_image_description">Grocery item image</string>
+    <string name="item_name_description">Grocery item name</string>
+    <string name="item_quantity_description">Grocery item quantity</string>
+    <string name="detail_items_recyclerview">List of items in the user\'s grocery list</string>
+    <string name="user_lists_description">Grocery list of %1$s</string>
 
     <string name="delete">Delete </string>
 

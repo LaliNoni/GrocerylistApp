@@ -1,59 +1,93 @@
 package com.example.grocerylistapp
 
+import android.app.AlertDialog
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import com.google.firebase.firestore.FirebaseFirestore
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+data class UserModel(
+    val uid: String = "",
+    val name: String = ""
+)
 
-/**
- * A simple [Fragment] subclass.
- * Use the [SearchFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class SearchFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var searchInput: EditText
+    private lateinit var searchButton: Button
+
+    private val firestore = FirebaseFirestore.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
+    ): View {
         return inflater.inflate(R.layout.fragment_search, container, false)
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment SearchFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            SearchFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        searchInput = view.findViewById(R.id.search_input)
+        searchButton = view.findViewById(R.id.search_button)
+
+        searchButton.setOnClickListener {
+            val queryText = searchInput.text.toString().trim()
+            if (queryText.isEmpty()) {
+                Toast.makeText(requireContext(), "Enter a name to search", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            searchUsersByName(queryText)
+        }
+    }
+
+    private fun searchUsersByName(nameQuery: String) {
+        val lowerCaseQuery = nameQuery.toLowerCase()
+        val upperBound = nameQuery.toLowerCase() + '\uf8ff'
+
+        firestore.collection("users")
+            .whereGreaterThanOrEqualTo("name", lowerCaseQuery)
+            .whereLessThanOrEqualTo("name", upperBound)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val users = snapshot.documents.mapNotNull { doc ->
+                    val uid = doc.id
+                    val name = doc.getString("name") ?: ""
+                    UserModel(uid, name)
+                }.filter { it.name.contains(nameQuery, ignoreCase = true) }
+
+                if (users.isEmpty()) {
+                    Toast.makeText(requireContext(), "No users found", Toast.LENGTH_SHORT).show()
+                } else {
+                    showUsersDialog(users)
                 }
             }
+            .addOnFailureListener {
+                Toast.makeText(requireContext(), "Search failed: ${it.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun showUsersDialog(users: List<UserModel>) {
+        val userNames = users.map { it.name }.toTypedArray()
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("Select a user")
+            .setItems(userNames) { _, which ->
+                val selectedUser = users[which]
+                Toast.makeText(requireContext(), "Selected: ${selectedUser.name}", Toast.LENGTH_SHORT).show()
+                val bundle = Bundle().apply {
+                    putString("userId", selectedUser.uid)
+                    putString("userName", selectedUser.name)
+                }
+                findNavController().navigate(R.id.action_searchFragment_to_userListFragment, bundle)
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 }

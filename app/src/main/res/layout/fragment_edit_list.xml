@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/edit_list_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp"
+    tools:context=".EditListFragment">
+
+    <EditText
+        android:id="@+id/list_name_input"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="8dp"
+        android:hint="@string/list_name_hint"
+        android:inputType="text"
+        android:backgroundTint="#CCCCCC"
+        android:padding="12dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/list_date_input"
+        app:layout_constraintHorizontal_weight="1" />
+
+    <EditText
+        android:id="@+id/list_date_input"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="8dp"
+        android:hint="@string/date_hint"
+        android:inputType="date"
+        android:backgroundTint="#CCCCCC"
+        android:padding="12dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/list_name_input"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_weight="1" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/userItemRecyclerView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:padding="8dp"
+        android:contentDescription="@string/recycler_view_user_input"
+        app:layout_constraintTop_toBottomOf="@id/list_name_input"
+        app:layout_constraintBottom_toTopOf="@id/save_list_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/save_list_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/save_button"
+        android:backgroundTint="#50B3D1"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/userItemRecyclerView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/itemRecyclerView"
+        android:layout_width="387dp"
+        android:layout_height="95dp"
+        android:layout_marginTop="24dp"
+        android:contentDescription="@string/recycler_view_item_image"
+        android:overScrollMode="never"
+        app:layout_constraintTop_toBottomOf="@id/save_list_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

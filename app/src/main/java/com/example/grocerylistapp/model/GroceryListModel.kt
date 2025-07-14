@@ -1,9 +1,10 @@
 package com.example.grocerylistapp.model
-import com.example.grocerylistapp.R
 
 data class GroceryListModel(
-    val name: String,
-    val date: String,
-    val imageResId: Int = R.drawable.list_placeholder,
+    val id: String = "",
+    val name: String = "",
+    val date: String = "",
+    val userId: String = "",
+    val items: List<UserItem> = emptyList(),
     var isDone: Boolean = false
 )

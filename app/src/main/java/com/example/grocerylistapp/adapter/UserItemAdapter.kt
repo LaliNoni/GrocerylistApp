@@ -1,5 +1,7 @@
 package com.example.grocerylistapp.adapter
 
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,19 +24,41 @@ class UserItemAdapter(
         private val addButton: Button = view.findViewById(R.id.add_item_button)
         private val deleteButton: ImageButton = view.findViewById(R.id.delete_button)
 
+        private var nameWatcher: TextWatcher? = null
+        private var quantityWatcher: TextWatcher? = null
+
         fun bind(item: UserItem, position: Int) {
             image.setImageResource(item.imageRes)
-            name.setText(item.name)
-            quantity.setText(item.quantity.toString())
             checkBox.isChecked = item.isChecked
 
-            name.setOnFocusChangeListener { _, _ ->
-                item.name = name.text.toString()
+            nameWatcher?.let { name.removeTextChangedListener(it) }
+            quantityWatcher?.let { quantity.removeTextChangedListener(it) }
+
+            if (name.text.toString() != item.name) {
+                name.setText(item.name)
+            }
+            val quantityStr = if (item.quantity > 0) item.quantity.toString() else ""
+            if (quantity.text.toString() != quantityStr) {
+                quantity.setText(quantityStr)
             }
 
-            quantity.setOnFocusChangeListener { _, _ ->
-                item.quantity = quantity.text.toString().toIntOrNull() ?: 0
+            nameWatcher = object : TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    item.name = s?.toString() ?: ""
+                }
+                override fun afterTextChanged(s: Editable?) {}
             }
+            name.addTextChangedListener(nameWatcher)
+
+            quantityWatcher = object : TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    item.quantity = s?.toString()?.toIntOrNull() ?: 0
+                }
+                override fun afterTextChanged(s: Editable?) {}
+            }
+            quantity.addTextChangedListener(quantityWatcher)
 
             checkBox.setOnCheckedChangeListener { _, isChecked ->
                 item.isChecked = isChecked
@@ -58,9 +82,9 @@ class UserItemAdapter(
                 notifyItemRemoved(position)
                 notifyItemRangeChanged(position, items.size)
             }
-
         }
     }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.fragment_item_user_input, parent, false)

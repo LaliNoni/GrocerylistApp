@@ -32,33 +32,10 @@
         android:label="fragment_log_in"
         tools:layout="@layout/fragment_log_in" >
         <action
-            android:id="@+id/action_logInFragment_to_passwordResetFragment"
-            app:destination="@id/passwordResetFragment" />
-        <action
             android:id="@+id/action_logInFragment_to_groceryListsFragment"
             app:destination="@id/groceryListsFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/passwordResetFragment"
-        android:name="com.example.grocerylistapp.PasswordResetFragment"
-        android:label="fragment_password_reset"
-        tools:layout="@layout/fragment_password_reset" >
-        <action
-            android:id="@+id/action_passwordResetFragment_to_passwordVerificationFragment"
-            app:destination="@id/passwordVerificationFragment" />
-        <action
-            android:id="@+id/action_passwordResetFragment_to_logInFragment"
-            app:destination="@id/logInFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/passwordVerificationFragment"
-        android:name="com.example.grocerylistapp.PasswordVerificationFragment"
-        android:label="fragment_password_verification"
-        tools:layout="@layout/fragment_password_verification" >
-        <action
-            android:id="@+id/action_passwordVerificationFragment_to_logInFragment"
-            app:destination="@id/logInFragment" />
-    </fragment>
+
     <fragment
         android:id="@+id/groceryListsFragment"
         android:name="com.example.grocerylistapp.GroceryListsFragment"
@@ -73,12 +50,19 @@
         <action
             android:id="@+id/action_groceryListsFragment_to_addListFragment"
             app:destination="@id/addListFragment" />
+        <action
+            android:id="@+id/action_groceryListsFragment_to_editListFragment"
+            app:destination="@id/editListFragment" />
     </fragment>
     <fragment
         android:id="@+id/addListFragment"
         android:name="com.example.grocerylistapp.AddListFragment"
         android:label="fragment_add_list"
-        tools:layout="@layout/fragment_add_list" />
+        tools:layout="@layout/fragment_add_list" >
+        <action
+            android:id="@+id/action_addListFragment_to_groceryListsFragment2"
+            app:destination="@id/groceryListsFragment" />
+    </fragment>
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.example.grocerylistapp.ProfileFragment"
@@ -88,5 +72,30 @@
         android:id="@+id/searchFragment"
         android:name="com.example.grocerylistapp.SearchFragment"
         android:label="fragment_search"
-        tools:layout="@layout/fragment_search" />
+        tools:layout="@layout/fragment_search" >
+        <action
+            android:id="@+id/action_searchFragment_to_userListFragment"
+            app:destination="@id/userListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/editListFragment"
+        android:name="com.example.grocerylistapp.EditListFragment"
+        android:label="fragment_edit_list"
+        tools:layout="@layout/fragment_edit_list" />
+    <fragment
+        android:id="@+id/userListDetailFragment"
+        android:name="com.example.grocerylistapp.UserListDetailFragment"
+        android:label="UserListDetailFragment" />
+    <fragment
+        android:id="@+id/userListFragment"
+        android:name="com.example.grocerylistapp.UserListFragment"
+        android:label="fragment_search_user_lists"
+        tools:layout="@layout/fragment_search_user_lists" >
+        <action
+            android:id="@+id/action_userListFragment_to_userListDetailFragment"
+            app:destination="@id/userListDetailFragment" />
+        <action
+            android:id="@+id/action_userListFragment_to_searchFragment3"
+            app:destination="@id/searchFragment" />
+    </fragment>
 </navigation>

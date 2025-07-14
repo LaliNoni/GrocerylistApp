@@ -12,15 +12,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.grocerylistapp.adapter.ImagePickerAdapter
 import com.example.grocerylistapp.adapter.UserItemAdapter
 import com.example.grocerylistapp.model.GroceryItem
-import com.example.grocerylistapp.model.GroceryListModel
 import com.example.grocerylistapp.model.UserItem
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class AddListFragment : Fragment() {
 
     private lateinit var nameInput: EditText
     private lateinit var dateInput: EditText
     private lateinit var addButton: Button
-
 
     private lateinit var itemRecyclerView: RecyclerView
     private lateinit var userItemRecyclerView: RecyclerView
@@ -30,6 +30,9 @@ class AddListFragment : Fragment() {
     private val selectedItems = mutableListOf<GroceryItem>()
 
     private var selectedUserItemPosition: Int = -1
+
+    private val firestore = FirebaseFirestore.getInstance()
+    private val auth = FirebaseAuth.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,7 +50,7 @@ class AddListFragment : Fragment() {
         itemRecyclerView = view.findViewById(R.id.itemRecyclerView)
         userItemRecyclerView = view.findViewById(R.id.userItemRecyclerView)
 
-        userItem.add(UserItem())
+        userItem.add(UserItem(imageRes = R.drawable.bake))
 
         userItemAdapter = UserItemAdapter(
             userItem,
@@ -57,7 +60,7 @@ class AddListFragment : Fragment() {
                 val isQuantityValid = currentItem.quantity > 0
 
                 if (isNameValid && isQuantityValid) {
-                    userItem.add(position + 1, UserItem())
+                    userItem.add(position + 1, UserItem(imageRes = R.drawable.bake))
                     userItemAdapter.notifyItemInserted(position + 1)
                 } else {
                     Toast.makeText(
@@ -87,20 +90,51 @@ class AddListFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            val newList = GroceryListModel(name, date)
-            // TODO: Attach userItem and selectedItems to the model or save it
+            val validUserItems = userItem.filter { it.name.isNotBlank() && it.quantity > 0 }
 
-            Toast.makeText(requireContext(), "List \"$name\" added!", Toast.LENGTH_SHORT).show()
+            if (validUserItems.isEmpty()) {
+                Toast.makeText(requireContext(), "Add at least one valid grocery item", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
 
-            nameInput.text.clear()
-            dateInput.text.clear()
-            selectedItems.clear()
-            userItem.clear()
-            userItem.add(UserItem())
-            userItemAdapter.notifyDataSetChanged()
+            val currentUser = auth.currentUser
+            if (currentUser == null) {
+                Toast.makeText(requireContext(), "User not logged in", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val listData = hashMapOf(
+                "name" to name,
+                "date" to date,
+                "isDone" to false,
+                "items" to validUserItems.map {
+                    hashMapOf(
+                        "name" to it.name,
+                        "quantity" to it.quantity,
+                        "imageName" to it.imageRes
+                    )
+                }
+            )
+
+            firestore.collection("users")
+                .document(currentUser.uid)
+                .collection("groceryLists")
+                .add(listData)
+                .addOnSuccessListener {
+                    Toast.makeText(requireContext(), "List \"$name\" saved!", Toast.LENGTH_SHORT).show()
+                    // Reset inputs after save
+                    nameInput.text.clear()
+                    dateInput.text.clear()
+                    selectedItems.clear()
+                    userItem.clear()
+                    userItem.add(UserItem(imageRes = R.drawable.bake))
+                    userItemAdapter.notifyDataSetChanged()
+                }
+                .addOnFailureListener { e ->
+                    Toast.makeText(requireContext(), "Failed to save list: ${e.message}", Toast.LENGTH_LONG).show()
+                }
         }
     }
-
 
     private fun setupItemRecyclerView() {
         val availableItems = listOf(
@@ -186,7 +220,7 @@ class AddListFragment : Fragment() {
                 Toast.makeText(requireContext(), "${selectedItem.name} added", Toast.LENGTH_SHORT).show()
 
                 if (selectedUserItemPosition in userItem.indices) {
-                    userItem[selectedUserItemPosition].imageRes = selectedItem.imageResId ?: R.drawable.bake
+                    userItem[selectedUserItemPosition].imageRes = selectedItem.imageRes
                     userItemAdapter.notifyItemChanged(selectedUserItemPosition)
                     selectedUserItemPosition = -1
                 }

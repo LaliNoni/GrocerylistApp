@@ -45,29 +45,37 @@ class MainActivity : AppCompatActivity() {
                 R.id.homePageFragment,
                 R.id.logInFragment,
                 R.id.registerFragment -> View.GONE
+
                 else -> View.VISIBLE
             }
+
+            supportActionBar?.setDisplayHomeAsUpEnabled(
+                destination.id == R.id.userListFragment ||
+                        destination.id == R.id.userListDetailFragment ||
+                        destination.id == R.id.addListFragment
+            )
         }
     }
+        override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+            menuInflater.inflate(R.menu.top_app_bar_menu, menu)
+            return true
+        }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.top_app_bar_menu, menu)
-        return true
-    }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.action_logout -> {
-                auth.signOut()
+        override fun onOptionsItemSelected(item: MenuItem): Boolean {
+            return when (item.itemId) {
+                R.id.action_logout -> {
+                    auth.signOut()
 
-                val navHostFragment = supportFragmentManager
-                    .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-                val navController = navHostFragment.navController
-                navController.navigate(R.id.homePageFragment)
+                    val navHostFragment = supportFragmentManager
+                        .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+                    val navController = navHostFragment.navController
+                    navController.navigate(R.id.homePageFragment)
 
-                true
+                    true
+                }
+
+                else -> super.onOptionsItemSelected(item)
             }
-            else -> super.onOptionsItemSelected(item)
         }
     }
-}

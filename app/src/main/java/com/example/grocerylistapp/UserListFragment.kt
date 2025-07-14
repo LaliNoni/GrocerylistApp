@@ -27,7 +27,7 @@ class UserListFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)  // Enable menu callbacks for back button
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(

@@ -51,8 +51,7 @@ class MainActivity : AppCompatActivity() {
 
             supportActionBar?.setDisplayHomeAsUpEnabled(
                 destination.id == R.id.userListFragment ||
-                        destination.id == R.id.userListDetailFragment ||
-                        destination.id == R.id.addListFragment
+                        destination.id == R.id.userListDetailFragment
             )
         }
     }

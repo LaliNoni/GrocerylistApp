@@ -5,11 +5,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.Toast
+import android.widget.*
 import androidx.fragment.app.Fragment
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class ProfileFragment : Fragment() {
 
@@ -21,12 +20,15 @@ class ProfileFragment : Fragment() {
     private lateinit var profileLastName: EditText
     private lateinit var profileEmail: EditText
 
+    private val firestore = FirebaseFirestore.getInstance()
+    private val auth = FirebaseAuth.getInstance()
+
+    private var selectedProfileImageResId = R.drawable.ic_profile
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_profile, container, false)
-    }
+    ): View? = inflater.inflate(R.layout.fragment_profile, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         profileBanner = view.findViewById(R.id.profile_banner)
@@ -37,24 +39,73 @@ class ProfileFragment : Fragment() {
         profileLastName = view.findViewById(R.id.profile_last_name)
         profileEmail = view.findViewById(R.id.profile_email)
 
+        profileName.isEnabled = false
+        profileLastName.isEnabled = false
         profileEmail.isEnabled = false
+        profileBanner.isEnabled = false
+        saveButton.visibility = View.GONE
 
-        val openImagePicker = View.OnClickListener { showImagePickerDialog() }
-        profileBanner.setOnClickListener(openImagePicker)
-        editProfileButton.setOnClickListener(openImagePicker)
+        loadUserProfile()
+
+        editProfileButton.setOnClickListener {
+            profileName.isEnabled = true
+            profileLastName.isEnabled = true
+            profileBanner.isEnabled = true
+            saveButton.visibility = View.VISIBLE
+
+            profileBanner.setOnClickListener { showImagePickerDialog() }
+        }
 
         saveButton.setOnClickListener {
             val name = profileName.text.toString().trim()
             val lastName = profileLastName.text.toString().trim()
 
-            if (name.isEmpty() || lastName.isEmpty()) {
-                Toast.makeText(requireContext(), "Name and Last Name cannot be empty", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+            val currentUser = auth.currentUser
+            if (currentUser != null) {
+                val updates = mapOf(
+                    "name" to name,
+                    "lastName" to lastName,
+                    "profileImageRes" to selectedProfileImageResId
+                )
+                firestore.collection("users").document(currentUser.uid)
+                    .update(updates)
+                    .addOnSuccessListener {
+                        Toast.makeText(requireContext(), "Profile saved successfully!", Toast.LENGTH_SHORT).show()
+
+                        profileName.isEnabled = false
+                        profileLastName.isEnabled = false
+                        profileBanner.isEnabled = false
+                        saveButton.visibility = View.GONE
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(requireContext(), "Failed to save profile: ${it.message}", Toast.LENGTH_SHORT).show()
+                    }
             }
+        }
+    }
 
-            // TODO: Save the profile data (e.g. to database or shared prefs)
+    private fun loadUserProfile() {
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            firestore.collection("users").document(currentUser.uid)
+                .get()
+                .addOnSuccessListener { document ->
+                    if (document.exists()) {
+                        val name = document.getString("name") ?: ""
+                        val lastName = document.getString("lastName") ?: ""
+                        val email = currentUser.email ?: ""
+                        val imageRes = document.getLong("profileImageRes")?.toInt() ?: R.drawable.ic_profile
 
-            Toast.makeText(requireContext(), "Profile saved successfully!", Toast.LENGTH_SHORT).show()
+                        profileName.setText(name)
+                        profileLastName.setText(lastName)
+                        profileEmail.setText(email)
+                        profileBanner.setImageResource(imageRes)
+                        selectedProfileImageResId = imageRes
+                    }
+                }
+                .addOnFailureListener {
+                    Toast.makeText(requireContext(), "Failed to load profile", Toast.LENGTH_SHORT).show()
+                }
         }
     }
 
@@ -68,22 +119,26 @@ class ProfileFragment : Fragment() {
             .create()
 
         dialogView.findViewById<ImageView>(R.id.image_female_one).setOnClickListener {
-            profileBanner.setImageResource(R.drawable.female_profile_one)
+            selectedProfileImageResId = R.drawable.female_profile_one
+            profileBanner.setImageResource(selectedProfileImageResId)
             dialog.dismiss()
         }
 
         dialogView.findViewById<ImageView>(R.id.image_female_two).setOnClickListener {
-            profileBanner.setImageResource(R.drawable.female_profile_two)
+            selectedProfileImageResId = R.drawable.female_profile_two
+            profileBanner.setImageResource(selectedProfileImageResId)
             dialog.dismiss()
         }
 
         dialogView.findViewById<ImageView>(R.id.image_male_one).setOnClickListener {
-            profileBanner.setImageResource(R.drawable.male_profile_one)
+            selectedProfileImageResId = R.drawable.male_profile_one
+            profileBanner.setImageResource(selectedProfileImageResId)
             dialog.dismiss()
         }
 
         dialogView.findViewById<ImageView>(R.id.image_male_two).setOnClickListener {
-            profileBanner.setImageResource(R.drawable.male_profile_two)
+            selectedProfileImageResId = R.drawable.male_profile_two
+            profileBanner.setImageResource(selectedProfileImageResId)
             dialog.dismiss()
         }
 

@@ -123,7 +123,9 @@ class AddListFragment : Fragment() {
                 .add(listData)
                 .addOnSuccessListener {
                     Toast.makeText(requireContext(), "List \"$name\" saved!", Toast.LENGTH_SHORT).show()
-                    // Reset inputs after save
+
+                    findNavController().navigate(R.id.groceryListsFragment)
+
                     nameInput.text.clear()
                     dateInput.text.clear()
                     selectedItems.clear()

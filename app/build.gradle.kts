@@ -2,7 +2,11 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.androidx.navigation.safe.args)
+
+    id("org.jetbrains.kotlin.kapt")
+
     id("com.google.gms.google-services")
+
 }
 
 android {
@@ -37,6 +41,8 @@ android {
     }
 }
 
+val roomVersion = "2.7.2"
+
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -54,5 +60,9 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore-ktx")
+
+    implementation("androidx.room:room-runtime:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")
+    kapt("androidx.room:room-compiler:$roomVersion")
 
 }

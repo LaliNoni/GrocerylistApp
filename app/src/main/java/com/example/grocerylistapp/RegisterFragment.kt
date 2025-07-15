@@ -23,6 +23,8 @@ class RegisterFragment : Fragment() {
     private lateinit var passwordEditText: EditText
     private lateinit var birthDateEditText: EditText
     private lateinit var signUpButton: Button
+    private lateinit var progressBar: ProgressBar
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,6 +45,7 @@ class RegisterFragment : Fragment() {
         passwordEditText = view.findViewById(R.id.Password_regist)
         birthDateEditText = view.findViewById(R.id.BirthDate_regist)
         signUpButton = view.findViewById(R.id.Sign_button)
+        progressBar = view.findViewById(R.id.progressBar)
 
         birthDateEditText.isFocusable = false
         birthDateEditText.isClickable = true
@@ -74,6 +77,8 @@ class RegisterFragment : Fragment() {
                 return@setOnClickListener
             }
 
+            progressBar.visibility = View.VISIBLE
+
             auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(requireActivity()) { task ->
                     if (task.isSuccessful) {
@@ -89,14 +94,17 @@ class RegisterFragment : Fragment() {
                             db.collection("users").document(it.uid)
                                 .set(userInfo)
                                 .addOnSuccessListener {
+                                    progressBar.visibility = View.GONE
                                     Toast.makeText(requireContext(), "Registered successfully!", Toast.LENGTH_SHORT).show()
                                     findNavController().navigate(R.id.action_registerFragment_to_groceryListsFragment)
                                 }
                                 .addOnFailureListener { e ->
+                                    progressBar.visibility = View.GONE
                                     Toast.makeText(requireContext(), "Failed to save user data: ${e.message}", Toast.LENGTH_LONG).show()
                                 }
                         }
                     } else {
+                        progressBar.visibility = View.GONE
                         val errorMessage = task.exception?.message ?: "Registration failed."
                         Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_LONG).show()
                     }

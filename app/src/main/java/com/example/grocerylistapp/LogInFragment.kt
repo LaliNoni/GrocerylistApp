@@ -16,6 +16,7 @@ class LogInFragment : Fragment() {
     private lateinit var emailEditText: EditText
     private lateinit var passwordEditText: EditText
     private lateinit var loginButton: Button
+    private lateinit var progressBar: ProgressBar
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,6 +33,7 @@ class LogInFragment : Fragment() {
         emailEditText = view.findViewById(R.id.Email_log)
         passwordEditText = view.findViewById(R.id.Password_log)
         loginButton = view.findViewById(R.id.LogIn_button)
+        progressBar = view.findViewById(R.id.progressBar)
 
         loginButton.setOnClickListener {
             val email = emailEditText.text.toString().trim()
@@ -42,8 +44,14 @@ class LogInFragment : Fragment() {
                 return@setOnClickListener
             }
 
+            progressBar.visibility = View.VISIBLE
+
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(requireActivity()) { task ->
+
+                    progressBar.visibility = View.GONE
+                    loginButton.isEnabled = true
+
                     if (task.isSuccessful) {
                         Toast.makeText(requireContext(), "Login successful!", Toast.LENGTH_SHORT).show()
                         findNavController().navigate(R.id.action_logInFragment_to_groceryListsFragment)

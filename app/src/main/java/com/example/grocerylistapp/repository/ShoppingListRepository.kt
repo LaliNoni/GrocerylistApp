@@ -16,12 +16,12 @@ class ShoppingListRepository(private val dao: ShoppingListDao) {
         return dao.getAll()
     }
 
-    suspend fun insertAll(vararg lists: ShoppingListRoom) {
-        dao.insertAll(*lists)
+    suspend fun insertLists(vararg lists: ShoppingListRoom) {
+        dao.insertLists(lists.toList())
     }
 
     suspend fun updateList(list: ShoppingListRoom) {
-        dao.insertAll(list)
+        dao.insertList(list)
     }
 
     suspend fun deleteList(list: ShoppingListRoom) {
@@ -47,14 +47,14 @@ class ShoppingListRepository(private val dao: ShoppingListDao) {
                         id = doc.id,
                         name = doc.getString("name") ?: "",
                         date = doc.getString("date") ?: "",
-                        iconResId = (doc.getLong("iconResId") ?: 0L).toInt(),
+                        imageResId = (doc.getLong("iconResId") ?: 0L).toInt(),
                         lastUpdated = doc.getLong("lastUpdated") ?: System.currentTimeMillis()
                     )
                 }
 
                 scope.launch {
                     withContext(Dispatchers.IO) {
-                        insertAll(*localLists.toTypedArray())
+                        insertLists(*localLists.toTypedArray())
                     }
                     onComplete(true, null)
                 }
@@ -92,12 +92,12 @@ class ShoppingListRepository(private val dao: ShoppingListDao) {
                     id = docRef.id,
                     name = name,
                     date = "",
-                    iconResId = iconResId,
+                    imageResId = iconResId,
                     lastUpdated = System.currentTimeMillis()
                 )
 
                 CoroutineScope(Dispatchers.IO).launch {
-                    dao.insertAll(localList)
+                    dao.insertList(localList)
                 }
 
                 onComplete(true, null)

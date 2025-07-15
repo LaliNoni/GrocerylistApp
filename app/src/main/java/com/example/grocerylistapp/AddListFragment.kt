@@ -19,6 +19,7 @@ import com.example.grocerylistapp.model.UserItem
 import com.example.grocerylistapp.viewmodel.ShoppingListViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.example.grocerylistapp.util.AvailableGroceryItems
 
 class AddListFragment : Fragment() {
 
@@ -108,7 +109,7 @@ class AddListFragment : Fragment() {
                     hashMapOf(
                         "name" to it.name,
                         "quantity" to it.quantity,
-                        "imageName" to it.imageRes
+                        "imageName" to (AvailableGroceryItems.list.find { item -> item.imageRes == it.imageRes }?.imageName ?: "bake")
                     )
                 }
             )
@@ -124,7 +125,7 @@ class AddListFragment : Fragment() {
                         id = documentRef.id,
                         name = name,
                         date = date,
-                        iconResId = R.drawable.bake,
+                        imageResId = R.drawable.bake,
                         lastUpdated = System.currentTimeMillis()
                     )
                     shoppingListViewModel.insertLists(listRoom)
@@ -145,84 +146,7 @@ class AddListFragment : Fragment() {
     }
 
     private fun setupItemRecyclerView() {
-        val availableItems = listOf(
-            //Fruits
-            GroceryItem("Apple", "?", R.drawable.apple),
-            GroceryItem("Apricot", "?", R.drawable.apricot),
-            GroceryItem("Banana", "?", R.drawable.banana),
-            GroceryItem("Dragon fruit", "?", R.drawable.dragonfruit),
-            GroceryItem("Lemon", "?", R.drawable.lemon),
-            GroceryItem("Mango", "?", R.drawable.mango),
-            GroceryItem("Papaya", "?", R.drawable.papaya),
-            GroceryItem("Peach", "?", R.drawable.peach),
-            GroceryItem("Plum", "?", R.drawable.plum),
-            GroceryItem("Zucchini", "?", R.drawable.zucchini),
-
-            //Vegetables
-            GroceryItem("Tomato", "?", R.drawable.tomato),
-            GroceryItem("Lettuce", "?", R.drawable.lettuce),
-            GroceryItem("Cucumber", "?", R.drawable.cucumber),
-            GroceryItem("Chili", "?", R.drawable.chili),
-            GroceryItem("Corn", "?", R.drawable.corn),
-            GroceryItem("Edamame", "?", R.drawable.edamame),
-            GroceryItem("Eggplant", "?", R.drawable.eggplant),
-            GroceryItem("Green beans", "?", R.drawable.green_beans),
-            GroceryItem("Green pepper", "?", R.drawable.greenpepper),
-            GroceryItem("Onion Purple", "?", R.drawable.purple_onion),
-            GroceryItem("Onion White", "?", R.drawable.white_onion),
-            GroceryItem("Pumpkin", "?", R.drawable.pumpkin),
-            GroceryItem("Red Cabbage", "?", R.drawable.red_cabbage),
-            GroceryItem("Yellow Pepper", "?", R.drawable.yellowpepper),
-
-            //Dairy
-            GroceryItem("Cheese", "?", R.drawable.cheese),
-            GroceryItem("Milk", "?", R.drawable.milk),
-            GroceryItem("Yogurt", "?", R.drawable.yogurt),
-            GroceryItem("Butter", "?", R.drawable.butter),
-            GroceryItem("Eggs", "?", R.drawable.egg),
-
-            //Canned Food
-            GroceryItem("Canned food", "?", R.drawable.canned_food),
-            GroceryItem("Canned Fish", "?", R.drawable.canned_fish),
-            GroceryItem("Tinned Food", "?", R.drawable.tinned_food),
-
-            //Bakery
-            GroceryItem("White Bread", "?", R.drawable.white_bread),
-            GroceryItem("Whole Wheat Bread", "?", R.drawable.whole_wheat_bread),
-            GroceryItem("Baguette", "?", R.drawable.baguette),
-            GroceryItem("Pizza", "?", R.drawable.pizza),
-            GroceryItem("Bake", "?", R.drawable.bake),
-
-            //Condiments
-            GroceryItem("Salt", "?", R.drawable.salt),
-            GroceryItem("Baking Soda", "?", R.drawable.baking_soda),
-            GroceryItem("Olive Oil", "?", R.drawable.olive_oil),
-            GroceryItem("Marinara Sauce", "?", R.drawable.marinara_sauce),
-
-            //Proteins
-            GroceryItem("Fish", "?", R.drawable.fish),
-            GroceryItem("Salmon", "?", R.drawable.salmon),
-            GroceryItem("Salami", "?", R.drawable.salami),
-
-            //Snacks
-            GroceryItem("Snack", "?", R.drawable.snack),
-            GroceryItem("Chocolate", "?", R.drawable.chocolate),
-            GroceryItem("Popcorn", "?", R.drawable.popcorn),
-            GroceryItem("Pickles", "?", R.drawable.pickles),
-            GroceryItem("Olive", "?", R.drawable.olive),
-
-            //Beverages
-            GroceryItem("Water Bottle", "?", R.drawable.water_bottle),
-            GroceryItem("Tea", "?", R.drawable.tea),
-            GroceryItem("Coffee Beans", "?", R.drawable.coffee_beans),
-            GroceryItem("Apple Juice", "?", R.drawable.apple_juice),
-            GroceryItem("Cider", "?", R.drawable.cider),
-            GroceryItem("Juice", "?", R.drawable.juice),
-            GroceryItem("Red Wine", "?", R.drawable.red_wine),
-            GroceryItem("Gallon", "?", R.drawable.gallon)
-        )
-
-        val adapter = ImagePickerAdapter(availableItems) { selectedItem, isSelected ->
+        val adapter = ImagePickerAdapter(AvailableGroceryItems.list) { selectedItem, isSelected ->
             if (isSelected) {
                 selectedItems.add(selectedItem)
                 Toast.makeText(requireContext(), "${selectedItem.name} added", Toast.LENGTH_SHORT).show()

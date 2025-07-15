@@ -10,12 +10,10 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.example.grocerylistapp.model.UserModel
 
-data class UserModel(
-    val uid: String = "",
-    val name: String = ""
-)
 
 class SearchFragment : Fragment() {
 
@@ -23,6 +21,7 @@ class SearchFragment : Fragment() {
     private lateinit var searchButton: Button
 
     private val firestore = FirebaseFirestore.getInstance()
+    private val auth = FirebaseAuth.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,8 +47,15 @@ class SearchFragment : Fragment() {
     }
 
     private fun searchUsersByName(nameQuery: String) {
-        val lowerCaseQuery = nameQuery.toLowerCase()
-        val upperBound = nameQuery.toLowerCase() + '\uf8ff'
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
+            Toast.makeText(requireContext(), "User not signed in", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val currentUserId = currentUser.uid
+        val lowerCaseQuery = nameQuery.lowercase()
+        val upperBound = lowerCaseQuery + '\uf8ff'
 
         firestore.collection("users")
             .whereGreaterThanOrEqualTo("name", lowerCaseQuery)
@@ -60,7 +66,7 @@ class SearchFragment : Fragment() {
                     val uid = doc.id
                     val name = doc.getString("name") ?: ""
                     UserModel(uid, name)
-                }.filter { it.name.contains(nameQuery, ignoreCase = true) }
+                }.filter { it.name.contains(nameQuery, ignoreCase = true) && it.uid != currentUserId }
 
                 if (users.isEmpty()) {
                     Toast.makeText(requireContext(), "No users found", Toast.LENGTH_SHORT).show()

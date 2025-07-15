@@ -9,6 +9,7 @@ import androidx.room.RoomDatabase
 abstract class AppLocalDatabase : RoomDatabase() {
 
     abstract fun shoppingListDao(): ShoppingListDao
+    abstract fun userProfileDao(): UserProfileDao
 
     companion object {
         @Volatile

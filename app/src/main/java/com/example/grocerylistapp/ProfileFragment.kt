@@ -7,8 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.example.grocerylistapp.viewmodel.UserProfileViewModel
+import com.example.grocerylistapp.viewmodel.UserProfileViewModelFactory
+import com.example.grocerylistapp.repository.UserProfileRepository
+import com.example.grocerylistapp.database.AppLocalDatabase
+import com.example.grocerylistapp.database.UserProfile
 
 class ProfileFragment : Fragment() {
 
@@ -23,12 +29,14 @@ class ProfileFragment : Fragment() {
     private val firestore = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
 
+    private lateinit var userViewModel: UserProfileViewModel
+
     private var selectedProfileImageResId = R.drawable.ic_profile
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_profile, container, false)
+    ): View = inflater.inflate(R.layout.fragment_profile, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         profileBanner = view.findViewById(R.id.profile_banner)
@@ -44,6 +52,11 @@ class ProfileFragment : Fragment() {
         profileEmail.isEnabled = false
         profileBanner.isEnabled = false
         saveButton.visibility = View.GONE
+
+        val dao = AppLocalDatabase.getInstance(requireContext()).userProfileDao()
+        val repository = UserProfileRepository(dao)
+        val factory = UserProfileViewModelFactory(repository)
+        userViewModel = ViewModelProvider(this, factory)[UserProfileViewModel::class.java]
 
         loadUserProfile()
 
@@ -72,6 +85,14 @@ class ProfileFragment : Fragment() {
                     .addOnSuccessListener {
                         Toast.makeText(requireContext(), "Profile saved successfully!", Toast.LENGTH_SHORT).show()
 
+                        val updatedUser = UserProfile(
+                            email = currentUser.email ?: "",
+                            name = name,
+                            lastName = lastName,
+                            profileImageRes = selectedProfileImageResId
+                        )
+                        userViewModel.insertOrUpdateUser(updatedUser)
+
                         profileName.isEnabled = false
                         profileLastName.isEnabled = false
                         profileBanner.isEnabled = false
@@ -87,13 +108,14 @@ class ProfileFragment : Fragment() {
     private fun loadUserProfile() {
         val currentUser = auth.currentUser
         if (currentUser != null) {
+            val email = currentUser.email ?: return
+
             firestore.collection("users").document(currentUser.uid)
                 .get()
                 .addOnSuccessListener { document ->
                     if (document.exists()) {
                         val name = document.getString("name") ?: ""
                         val lastName = document.getString("lastName") ?: ""
-                        val email = currentUser.email ?: ""
                         val imageRes = document.getLong("profileImageRes")?.toInt() ?: R.drawable.ic_profile
 
                         profileName.setText(name)
@@ -101,11 +123,24 @@ class ProfileFragment : Fragment() {
                         profileEmail.setText(email)
                         profileBanner.setImageResource(imageRes)
                         selectedProfileImageResId = imageRes
+
+                        val user = UserProfile(email, name, lastName, imageRes)
+                        userViewModel.insertOrUpdateUser(user)
                     }
                 }
                 .addOnFailureListener {
-                    Toast.makeText(requireContext(), "Failed to load profile", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Failed to load from Firebase", Toast.LENGTH_SHORT).show()
                 }
+
+            userViewModel.getUser(email).observe(viewLifecycleOwner) { user ->
+                if (user != null) {
+                    profileName.setText(user.name)
+                    profileLastName.setText(user.lastName)
+                    profileEmail.setText(user.email)
+                    profileBanner.setImageResource(user.profileImageRes)
+                    selectedProfileImageResId = user.profileImageRes
+                }
+            }
         }
     }
 

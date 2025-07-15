@@ -6,14 +6,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.grocerylistapp.adapter.UserItemAdapter
 import com.example.grocerylistapp.adapter.ImagePickerAdapter
+import com.example.grocerylistapp.adapter.UserItemAdapter
+import com.example.grocerylistapp.database.ShoppingListRoom
 import com.example.grocerylistapp.model.GroceryItem
 import com.example.grocerylistapp.model.UserItem
+import com.example.grocerylistapp.viewmodel.ShoppingListViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -21,22 +24,75 @@ class EditListFragment : Fragment() {
 
     private lateinit var nameInput: EditText
     private lateinit var dateInput: EditText
+    private lateinit var isDoneCheckbox: CheckBox
     private lateinit var saveButton: Button
     private lateinit var recyclerView: RecyclerView
     private lateinit var itemRecyclerView: RecyclerView
-
 
     private lateinit var adapter: UserItemAdapter
     private lateinit var imageAdapter: ImagePickerAdapter
 
     private val userItems = mutableListOf<UserItem>()
 
-
     private var selectedUserItemPosition: Int = -1
     private var listId: String? = null
+    private var isDone: Boolean = false
 
     private val firestore = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
+    private val shoppingListViewModel: ShoppingListViewModel by viewModels()
+
+
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View = inflater.inflate(R.layout.fragment_edit_list, container, false)
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        nameInput = view.findViewById(R.id.list_name_input)
+        dateInput = view.findViewById(R.id.list_date_input)
+        isDoneCheckbox = view.findViewById(R.id.item_checkbox)
+        saveButton = view.findViewById(R.id.save_list_button)
+        recyclerView = view.findViewById(R.id.userItemRecyclerView)
+        itemRecyclerView = view.findViewById(R.id.itemRecyclerView)
+
+        listId = arguments?.getString("listId")
+        if (listId == null) {
+            Toast.makeText(requireContext(), "List ID missing", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        setupItemRecyclerView()
+
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        adapter = UserItemAdapter(
+            userItems,
+            onAddItemBelow = { position ->
+                val item = userItems[position]
+                if (item.name.isNotBlank() && item.quantity > 0) {
+                    userItems.add(position + 1, UserItem(imageRes = R.drawable.bake))
+                    adapter.notifyItemInserted(position + 1)
+                } else {
+                    Toast.makeText(requireContext(), "Enter item name and quantity", Toast.LENGTH_SHORT).show()
+                }
+            },
+            onImageClick = { position ->
+                selectedUserItemPosition = position
+                Toast.makeText(requireContext(), "Click an image to assign to item #${position + 1}", Toast.LENGTH_SHORT).show()
+            }
+        )
+        recyclerView.adapter = adapter
+
+        loadListData()
+
+        saveButton.setOnClickListener {
+            isDone = isDoneCheckbox.isChecked
+            updateList()
+        }
+    }
 
     private val availableItems = listOf(
         GroceryItem("Apple", "apple", R.drawable.apple),
@@ -106,55 +162,6 @@ class EditListFragment : Fragment() {
         GroceryItem("Gallon", "gallon", R.drawable.gallon)
     )
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return inflater.inflate(R.layout.fragment_edit_list, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        nameInput = view.findViewById(R.id.list_name_input)
-        dateInput = view.findViewById(R.id.list_date_input)
-        saveButton = view.findViewById(R.id.save_list_button)
-        recyclerView = view.findViewById(R.id.userItemRecyclerView)
-        itemRecyclerView = view.findViewById(R.id.itemRecyclerView)
-
-        listId = arguments?.getString("listId")
-        if (listId == null) {
-            Toast.makeText(requireContext(), "List ID missing", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        adapter = UserItemAdapter(
-            userItems,
-            onAddItemBelow = { position ->
-                val item = userItems[position]
-                if (item.name.isNotBlank() && item.quantity > 0) {
-                    userItems.add(position + 1, UserItem(imageRes = R.drawable.bake))
-                    adapter.notifyItemInserted(position + 1)
-                } else {
-                    Toast.makeText(requireContext(), "Enter item name and quantity", Toast.LENGTH_SHORT).show()
-                }
-            },
-            onImageClick = { position ->
-                selectedUserItemPosition = position
-                Toast.makeText(requireContext(), "Click an image to assign to item #${position + 1}", Toast.LENGTH_SHORT).show()
-            }
-        )
-        recyclerView.adapter = adapter
-
-        setupItemRecyclerView()
-        loadListData()
-
-        saveButton.setOnClickListener {
-            updateList()
-        }
-    }
-
     private fun setupItemRecyclerView() {
         imageAdapter = ImagePickerAdapter(availableItems) { selectedItem, isSelected ->
             if (isSelected && selectedUserItemPosition in userItems.indices) {
@@ -163,16 +170,12 @@ class EditListFragment : Fragment() {
                 selectedUserItemPosition = -1
             }
         }
-        itemRecyclerView.layoutManager = GridLayoutManager(requireContext(), 4, RecyclerView.VERTICAL, false)
+        itemRecyclerView.layoutManager = GridLayoutManager(requireContext(), 4)
         itemRecyclerView.adapter = imageAdapter
     }
 
     private fun loadListData() {
-        val currentUser = auth.currentUser
-        if (currentUser == null) {
-            Toast.makeText(requireContext(), "Not logged in", Toast.LENGTH_SHORT).show()
-            return
-        }
+        val currentUser = auth.currentUser ?: return
 
         firestore.collection("users")
             .document(currentUser.uid)
@@ -183,21 +186,22 @@ class EditListFragment : Fragment() {
                 if (doc != null && doc.exists()) {
                     nameInput.setText(doc.getString("name") ?: "")
                     dateInput.setText(doc.getString("date") ?: "")
+                    isDone = doc.getBoolean("isDone") ?: false
+                    isDoneCheckbox.isChecked = isDone
 
                     val itemsList = doc.get("items") as? List<*>
                     userItems.clear()
-                    if (itemsList != null) {
-                        userItems.addAll(itemsList.mapNotNull { item ->
-                            val map = item as? Map<*, *> ?: return@mapNotNull null
-                            val imageName = map["imageName"] as? String ?: "bake"
-                            UserItem(
-                                name = map["name"] as? String ?: "",
-                                quantity = (map["quantity"] as? Number)?.toInt() ?: 0,
-                                isChecked = false,
-                                imageRes = getImageResIdByName(imageName)
-                            )
-                        })
-                    }
+                    itemsList?.mapNotNull { item ->
+                        val map = item as? Map<*, *> ?: return@mapNotNull null
+                        val imageName = map["imageName"] as? String ?: "bake"
+                        UserItem(
+                            name = map["name"] as? String ?: "",
+                            quantity = (map["quantity"] as? Number)?.toInt() ?: 0,
+                            isChecked = false,
+                            imageRes = getImageResIdByName(imageName)
+                        )
+                    }?.let { userItems.addAll(it) }
+
                     adapter.notifyDataSetChanged()
                 }
             }
@@ -225,12 +229,13 @@ class EditListFragment : Fragment() {
         val updatedList = hashMapOf(
             "name" to name,
             "date" to date,
-            "isDone" to false,
+            "isDone" to isDone,
             "items" to validItems.map { item ->
                 hashMapOf(
                     "name" to item.name,
                     "quantity" to item.quantity,
-                    "imageName" to (availableItems.find { g -> g.imageRes == item.imageRes }?.imageName ?: "bake")                )
+                    "imageName" to (availableItems.find { g -> g.imageRes == item.imageRes }?.imageName ?: "bake")
+                )
             }
         )
 
@@ -242,8 +247,16 @@ class EditListFragment : Fragment() {
             .addOnSuccessListener {
                 Toast.makeText(requireContext(), "List updated", Toast.LENGTH_SHORT).show()
 
+                val roomList = ShoppingListRoom(
+                    id = listId!!,
+                    name = name,
+                    date = date,
+                    iconResId = R.drawable.bake,
+                    lastUpdated = System.currentTimeMillis(),
+                    isDone = isDone
+                )
+                shoppingListViewModel.insertLists(roomList)
                 findNavController().popBackStack()
-
             }
             .addOnFailureListener {
                 Toast.makeText(requireContext(), "Failed to update list", Toast.LENGTH_SHORT).show()

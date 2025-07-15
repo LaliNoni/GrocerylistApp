@@ -1,19 +1,50 @@
 package com.example.grocerylistapp.viewmodel
 
-import androidx.lifecycle.*
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.viewModelScope
+import com.example.grocerylistapp.database.AppLocalDatabase
 import com.example.grocerylistapp.database.ShoppingListRoom
 import com.example.grocerylistapp.repository.ShoppingListRepository
 import kotlinx.coroutines.launch
 
-class ShoppingListViewModel(private val repository: ShoppingListRepository) : ViewModel() {
+class ShoppingListViewModel(application: Application) : AndroidViewModel(application) {
 
-    val allShoppingLists: LiveData<List<ShoppingListRoom>> = repository.allShoppingLists
+    private val repository: ShoppingListRepository
+    val allShoppingLists: LiveData<List<ShoppingListRoom>>
+    fun getAllShoppingLists(): LiveData<List<ShoppingListRoom>> = allShoppingLists
 
-    fun insert(list: ShoppingListRoom) = viewModelScope.launch {
-        repository.insert(list)
+
+    init {
+        val dao = AppLocalDatabase.getInstance(application).shoppingListDao()
+        repository = ShoppingListRepository(dao)
+        allShoppingLists = repository.getAllShoppingLists()
     }
 
-    fun delete(list: ShoppingListRoom) = viewModelScope.launch {
-        repository.delete(list)
+    fun addList(name: String, iconResId: Int, onComplete: (Boolean, String?) -> Unit) {
+        repository.addListToFirestoreAndRoom(name, iconResId, onComplete)
+    }
+
+    fun insertLists(vararg lists: ShoppingListRoom) {
+        viewModelScope.launch {
+            repository.insertAll(*lists)
+        }
+    }
+
+    fun updateShoppingList(list: ShoppingListRoom) {
+        viewModelScope.launch {
+            repository.updateList(list)
+        }
+    }
+
+    fun deleteList(list: ShoppingListRoom) {
+        viewModelScope.launch {
+            repository.deleteList(list)
+        }
+    }
+
+    fun syncListsFromFirestore(onComplete: (Boolean, String?) -> Unit) {
+        repository.syncFromFirebase(viewModelScope, onComplete)
     }
 }

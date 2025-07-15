@@ -5,11 +5,19 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [ShoppingListRoom::class], version = 1)
+@Database(
+    entities = [
+        UserProfile::class,
+        ShoppingListRoom::class,
+        ShoppingItemRoom::class
+    ],
+    version = 1
+)
 abstract class AppLocalDatabase : RoomDatabase() {
 
-    abstract fun shoppingListDao(): ShoppingListDao
     abstract fun userProfileDao(): UserProfileDao
+    abstract fun shoppingItemDao(): ShoppingItemDao
+    abstract fun shoppingListDao(): ShoppingListDao
 
     companion object {
         @Volatile
@@ -30,3 +38,4 @@ abstract class AppLocalDatabase : RoomDatabase() {
         }
     }
 }
+

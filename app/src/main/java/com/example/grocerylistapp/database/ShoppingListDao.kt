@@ -6,7 +6,7 @@ import androidx.room.*
 @Dao
 interface ShoppingListDao {
 
-    @Query("SELECT * FROM SHOPPING_LISTS")
+    @Query("SELECT * FROM shopping_lists")
     fun getAll(): LiveData<List<ShoppingListRoom>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

@@ -9,13 +9,14 @@ import android.widget.TextView
 import android.widget.ImageButton
 import androidx.recyclerview.widget.RecyclerView
 import com.example.grocerylistapp.R
+import com.example.grocerylistapp.database.ShoppingListRoom
 import com.example.grocerylistapp.model.GroceryListModel
 
 class GroceryListAdapter(
-    private val lists: List<GroceryListModel>,
-    private val onCheckedChange: (position: Int, isChecked: Boolean) -> Unit,
-    private val onDeleteClick: (position: Int) -> Unit,
-    private val onListClick: (GroceryListModel) -> Unit
+    private val lists: MutableList<ShoppingListRoom>,
+    private val onCheckedChange: (Int, Boolean) -> Unit,
+    private val onDeleteClick: (Int) -> Unit,
+    private val onListClick: (ShoppingListRoom) -> Unit
 ) : RecyclerView.Adapter<GroceryListAdapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

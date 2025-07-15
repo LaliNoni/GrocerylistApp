@@ -21,17 +21,21 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="0dp" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/groceryRecyclerView"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:contentDescription="@string/recycler_view_lists"
         app:layout_constraintTop_toBottomOf="@id/grocery_lists_headline"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:ignore="MissingClass">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/groceryRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/recycler_view_lists" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

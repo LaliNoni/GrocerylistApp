@@ -6,14 +6,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.grocerylistapp.adapter.ImagePickerAdapter
 import com.example.grocerylistapp.adapter.UserItemAdapter
+import com.example.grocerylistapp.database.ShoppingListRoom
 import com.example.grocerylistapp.model.GroceryItem
 import com.example.grocerylistapp.model.UserItem
+import com.example.grocerylistapp.viewmodel.ShoppingListViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -30,6 +33,8 @@ class AddListFragment : Fragment() {
     private val userItem = mutableListOf<UserItem>()
     private val selectedItems = mutableListOf<GroceryItem>()
 
+    private val shoppingListViewModel: ShoppingListViewModel by viewModels()
+
     private var selectedUserItemPosition: Int = -1
 
     private val firestore = FirebaseFirestore.getInstance()
@@ -43,8 +48,6 @@ class AddListFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         nameInput = view.findViewById(R.id.list_name_input)
         dateInput = view.findViewById(R.id.list_date_input)
         addButton = view.findViewById(R.id.add_list_button)
@@ -57,23 +60,16 @@ class AddListFragment : Fragment() {
             userItem,
             onAddItemBelow = { position ->
                 val currentItem = userItem[position]
-                val isNameValid = currentItem.name.isNotBlank()
-                val isQuantityValid = currentItem.quantity > 0
-
-                if (isNameValid && isQuantityValid) {
+                if (currentItem.name.isNotBlank() && currentItem.quantity > 0) {
                     userItem.add(position + 1, UserItem(imageRes = R.drawable.bake))
                     userItemAdapter.notifyItemInserted(position + 1)
                 } else {
-                    Toast.makeText(
-                        requireContext(),
-                        "Please enter item name and quantity before adding a new item",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(requireContext(), "Enter item name and quantity first", Toast.LENGTH_SHORT).show()
                 }
             },
             onImageClick = { position ->
                 selectedUserItemPosition = position
-                Toast.makeText(requireContext(), "Select an image below to replace item #${position + 1} image", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Select an image for item #${position + 1}", Toast.LENGTH_SHORT).show()
             }
         )
 
@@ -87,14 +83,14 @@ class AddListFragment : Fragment() {
             val date = dateInput.text.toString().trim()
 
             if (name.isEmpty() || date.isEmpty()) {
-                Toast.makeText(requireContext(), "Please enter both name and date", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Enter both name and date", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             val validUserItems = userItem.filter { it.name.isNotBlank() && it.quantity > 0 }
 
             if (validUserItems.isEmpty()) {
-                Toast.makeText(requireContext(), "Add at least one valid grocery item", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Add at least one valid item", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -121,8 +117,17 @@ class AddListFragment : Fragment() {
                 .document(currentUser.uid)
                 .collection("groceryLists")
                 .add(listData)
-                .addOnSuccessListener {
+                .addOnSuccessListener { documentRef ->
                     Toast.makeText(requireContext(), "List \"$name\" saved!", Toast.LENGTH_SHORT).show()
+
+                    val listRoom = ShoppingListRoom(
+                        id = documentRef.id,
+                        name = name,
+                        date = date,
+                        iconResId = R.drawable.bake,
+                        lastUpdated = System.currentTimeMillis()
+                    )
+                    shoppingListViewModel.insertLists(listRoom)
 
                     findNavController().navigate(R.id.groceryListsFragment)
 
@@ -134,7 +139,7 @@ class AddListFragment : Fragment() {
                     userItemAdapter.notifyDataSetChanged()
                 }
                 .addOnFailureListener { e ->
-                    Toast.makeText(requireContext(), "Failed to save list: ${e.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(requireContext(), "Failed to save: ${e.message}", Toast.LENGTH_LONG).show()
                 }
         }
     }

@@ -7,12 +7,16 @@ import androidx.lifecycle.viewModelScope
 import com.example.grocerylistapp.database.AppLocalDatabase
 import com.example.grocerylistapp.database.ShoppingListRoom
 import com.example.grocerylistapp.repository.ShoppingListRepository
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
 
 class ShoppingListViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: ShoppingListRepository
     val allShoppingLists: LiveData<List<ShoppingListRoom>>
+    val firestore = FirebaseFirestore.getInstance()
+    val currentUser = FirebaseAuth.getInstance().currentUser
 
     init {
         val dao = AppLocalDatabase.getInstance(application).shoppingListDao()
@@ -26,7 +30,7 @@ class ShoppingListViewModel(application: Application) : AndroidViewModel(applica
 
     fun insertLists(vararg lists: ShoppingListRoom) {
         viewModelScope.launch {
-            repository.insertAll(*lists)
+            repository.insertLists(*lists)
         }
     }
 

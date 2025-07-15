@@ -5,13 +5,19 @@ import androidx.room.*
 
 @Dao
 interface ShoppingListDao {
-
-    @Query("SELECT * FROM shopping_lists")
-    fun getAll(): LiveData<List<ShoppingListRoom>>
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertList(list: ShoppingListRoom)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(vararg lists: ShoppingListRoom)
+    suspend fun insertLists(lists: List<ShoppingListRoom>)
+
+    @Query("DELETE FROM shopping_lists")
+    suspend fun deleteAll()
 
     @Delete
     suspend fun delete(list: ShoppingListRoom)
+
+    @Query("SELECT * FROM shopping_lists ORDER BY lastUpdated DESC")
+    fun getAll(): LiveData<List<ShoppingListRoom>>
 }
+

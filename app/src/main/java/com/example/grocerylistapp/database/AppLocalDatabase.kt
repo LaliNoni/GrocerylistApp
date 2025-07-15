@@ -11,7 +11,7 @@ import androidx.room.RoomDatabase
         ShoppingListRoom::class,
         ShoppingItemRoom::class
     ],
-    version = 1
+    version = 2
 )
 abstract class AppLocalDatabase : RoomDatabase() {
 

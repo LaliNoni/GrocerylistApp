@@ -24,7 +24,6 @@ class EditListFragment : Fragment() {
 
     private lateinit var nameInput: EditText
     private lateinit var dateInput: EditText
-    private lateinit var isDoneCheckbox: CheckBox
     private lateinit var saveButton: Button
     private lateinit var recyclerView: RecyclerView
     private lateinit var itemRecyclerView: RecyclerView
@@ -54,7 +53,6 @@ class EditListFragment : Fragment() {
 
         nameInput = view.findViewById(R.id.list_name_input)
         dateInput = view.findViewById(R.id.list_date_input)
-        isDoneCheckbox = view.findViewById(R.id.item_checkbox)
         saveButton = view.findViewById(R.id.save_list_button)
         recyclerView = view.findViewById(R.id.userItemRecyclerView)
         itemRecyclerView = view.findViewById(R.id.itemRecyclerView)
@@ -89,7 +87,6 @@ class EditListFragment : Fragment() {
         loadListData()
 
         saveButton.setOnClickListener {
-            isDone = isDoneCheckbox.isChecked
             updateList()
         }
     }
@@ -187,17 +184,18 @@ class EditListFragment : Fragment() {
                     nameInput.setText(doc.getString("name") ?: "")
                     dateInput.setText(doc.getString("date") ?: "")
                     isDone = doc.getBoolean("isDone") ?: false
-                    isDoneCheckbox.isChecked = isDone
 
                     val itemsList = doc.get("items") as? List<*>
                     userItems.clear()
                     itemsList?.mapNotNull { item ->
                         val map = item as? Map<*, *> ?: return@mapNotNull null
                         val imageName = map["imageName"] as? String ?: "bake"
+                        val isChecked = map["isChecked"] as? Boolean ?: false
+
                         UserItem(
                             name = map["name"] as? String ?: "",
                             quantity = (map["quantity"] as? Number)?.toInt() ?: 0,
-                            isChecked = false,
+                            isChecked = isChecked,
                             imageRes = getImageResIdByName(imageName)
                         )
                     }?.let { userItems.addAll(it) }
@@ -234,6 +232,7 @@ class EditListFragment : Fragment() {
                 hashMapOf(
                     "name" to item.name,
                     "quantity" to item.quantity,
+                    "isChecked" to item.isChecked,
                     "imageName" to (availableItems.find { g -> g.imageRes == item.imageRes }?.imageName ?: "bake")
                 )
             }

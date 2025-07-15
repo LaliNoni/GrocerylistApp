@@ -13,8 +13,6 @@ class ShoppingListViewModel(application: Application) : AndroidViewModel(applica
 
     private val repository: ShoppingListRepository
     val allShoppingLists: LiveData<List<ShoppingListRoom>>
-    fun getAllShoppingLists(): LiveData<List<ShoppingListRoom>> = allShoppingLists
-
 
     init {
         val dao = AppLocalDatabase.getInstance(application).shoppingListDao()
